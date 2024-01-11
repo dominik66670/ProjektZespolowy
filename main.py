@@ -1,8 +1,18 @@
+# This is a sample Python script.
+
+# Press Shift+F10 to execute it or replace it with your code.
+# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+
+import math
 import tkinter as tk
+from tkinter import filedialog
+
+from items import Sensor
+from items import POI
 
 def handle_poi_selection():
     # Obsługa zaznaczania punktów POI
-    print("Selected POI:", selected_poi.get())
+    print_POIs(800,800)
 
 def read_wsn():
     # Obsługa przycisku "read wns"
@@ -12,9 +22,41 @@ def read_wsn():
     print("Active Sensor:")
 def read_wsn_on_off():
     # Obsługa przycisku "read wns on off"
-    active_sensor_value=active_sensor_var.get()
+    active_sensor_value = active_sensor_var.get()
     print("Sensor Range:", active_sensor_value)
+    
+def read_file(file_path):
+    with open(file_path, 'r') as file:
+        lines = file.readlines()
+    lines.pop(0)
+    krotki = []
+    for i in lines:
+        dane = i.split(' ')
+        krotki.append((float(dane[0]),float(dane[1])))
+    print(krotki)
+def browse_file():
+    file_path = filedialog.askopenfilename(initialdir="DATA/",title="Wybierz plik")
+    if file_path:
+        # Wyświetl ścieżkę do wybranego pliku
+        # Odczytaj zawartość pliku
+        read_file(file_path)
 
+def print_POIs(x,y):
+    canvas.delete("all")
+    count = selected_poi.get()
+    countsqrt = math.sqrt(count)
+    countsqrt = round(countsqrt)
+    ix = x / (countsqrt + 1)
+    ix = round(ix)
+    iy = y / (countsqrt + 1)
+    iy = round(iy)
+    tempix = ix
+    for i in range(0,countsqrt,1):
+        tempiy = iy
+        for j in range(0,countsqrt,1):
+            canvas.create_oval(tempix, tempiy, tempix + 2, tempiy + 2, outline="#000000",fill="#FFFF00")
+            tempiy += iy
+        tempix += ix
 # Tworzenie głównego okna
 root = tk.Tk()
 root.title("Okno z Canvas, Radiobuttons, Text Input i Checkbox")
@@ -34,12 +76,12 @@ label_poi = tk.Label(frame_left, text="Points of interest (POI)")
 label_poi.pack(anchor=tk.W)
 
 # Zmienna do przechowywania zaznaczonego POI
-selected_poi = tk.StringVar()
+selected_poi = tk.IntVar()
 
 # Radiobuttons
-radiobutton_poi36 = tk.Radiobutton(frame_left, text="POI 36", variable=selected_poi, value=36, command=handle_poi_selection)
-radiobutton_poi121 = tk.Radiobutton(frame_left, text="POI 121", variable=selected_poi, value=121, command=handle_poi_selection)
-radiobutton_poi441 = tk.Radiobutton(frame_left, text="POI 441", variable=selected_poi, value=441, command=handle_poi_selection)
+radiobutton_poi36 = tk.Radiobutton(frame_left, text=36, variable=selected_poi, value=36, command=handle_poi_selection)
+radiobutton_poi121 = tk.Radiobutton(frame_left, text=121, variable=selected_poi, value=121, command=handle_poi_selection)
+radiobutton_poi441 = tk.Radiobutton(frame_left, text=441, variable=selected_poi, value=441, command=handle_poi_selection)
 radiobutton_poi121.select()
 radiobutton_poi36.pack(anchor=tk.W)
 radiobutton_poi121.pack(anchor=tk.W)
@@ -50,7 +92,7 @@ label_sensor_params = tk.Label(frame_left, text="Sensor parameters")
 label_sensor_params.pack(anchor=tk.W)
 
 # Przycisk "read wns"
-button_read_wsn = tk.Button(frame_left, text="Read WSN", command=read_wsn)
+button_read_wsn = tk.Button(frame_left, text="Read WSN", command=browse_file)
 button_read_wsn.pack(anchor=tk.W)
 
 
@@ -107,7 +149,7 @@ button_next_page.pack(side=tk.LEFT, padx=5)
 
 
 # Canvas po prawej stronie
-canvas = tk.Canvas(frame_right, bg="gray")
+canvas = tk.Canvas(frame_right, bg="white")
 canvas.pack(fill=tk.BOTH, expand=True)
 
 
